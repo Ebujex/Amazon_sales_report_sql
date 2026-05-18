@@ -1,0 +1,53 @@
+/*
+Ceating new tables for the bronze layer so I can import the csv file to my sql server
+*/
+
+
+----check if table exist and drop table
+
+IF OBJECT_ID ('bronze.amazon_sales','U') IS NOT NULL
+	DROP TABLE bronze.amazon_sales;
+
+-------create table 'bronze.amazon_sales'
+
+CREATE TABLE bronze.amazon_sales (
+	sales_index INT,
+	Order_ID NVARCHAR(50),
+	Order_date DATE,
+	Order_status NVARCHAR(25),
+	Fulfilment NVARCHAR(25),
+	Sales_channel NVARCHAR(25),
+	ship_service_level NVARCHAR(50),
+	Style NVARCHAR(10),
+	SKU NVARCHAR(50),
+	Category NVARCHAR(20),
+	category_size NVARCHAR(10),
+	ASIN_no NVARCHAR(25),
+	Courier_status NVARCHAR(20),
+	Qty INT,
+	currency NVARCHAR(15),
+	Amount FLOAT,
+	ship_city NVARCHAR(50),
+	ship_state NVARCHAR(50),
+	ship_postal_code INT,
+	ship_country NVARCHAR(10),
+	promotion_ids NVARCHAR(500),
+	B2B	NVARCHAR(10),
+	fulfilled_by NVARCHAR(25)
+);
+
+----check if table exist and drop table
+
+IF OBJECT_ID ('bronze.sales_report','U') IS NOT NULL
+	DROP TABLE bronze.sales_report;
+
+-------create table 'bronze.sales_report'
+CREATE TABLE bronze.sales_report (
+	report_index INT,
+	SKU_code NVARCHAR(50),
+	Design_No NVARCHAR(15),
+	Stock INT,
+	Category NVARCHAR(50),
+	Category_size NVARCHAR(10),
+	Color NVARCHAR(20)
+);
