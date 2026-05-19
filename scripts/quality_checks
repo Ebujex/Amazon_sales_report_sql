@@ -13,3 +13,12 @@ GROUP BY
 	sku
 HAVING 
 	COUNT(*) > 1;
+
+------Leading and trailing whitespace check----------
+
+SELECT
+	order_ID
+FROM
+	bronze.amazon_sales
+WHERE
+	order_ID <> TRIM(order_ID)
