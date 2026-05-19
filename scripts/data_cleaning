@@ -6,34 +6,16 @@ data cleaning
 retaining the most complete records based on amount availability.------------
 /* GOAL; Find duplicate transaction rows and keep only the best version of each duplicate.*/
   
-  WITH duplicate AS 
-(SELECT
-	order_ID,
-	sku,
-	COUNT(*) AS count
-FROM
-	bronze.amazon_sales
-GROUP BY
-	order_ID,
-	sku
-	),
-duplicate_num AS
-(
+ 
+WITH row_num AS (
 SELECT
-	a.*,
-	ROW_NUMBER() OVER (PARTITION BY a.order_id,a.sku ORDER BY a.amount DESC) AS rank
-FROM
-	bronze.amazon_sales a
-JOIN
-	duplicate d
-	ON
-	a.sku = d.sku
-	AND
-	a.order_ID = d.order_ID
-	)
+		*,
+		ROW_NUMBER() OVER (PARTITION BY order_id,sku ORDER BY amount DESC) AS order_rank
+	FROM
+		bronze.amazon_sales)
 SELECT
-	 *
+ *
 FROM
-	duplicate_num
+	row_num
 WHERE
-	rank = 1
+	order_rank = 1
