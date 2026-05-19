@@ -1,0 +1,38 @@
+/*
+data cleaning
+*/
+
+---------- transactional Duplicate handling using ROW_NUMBER() window function to identify repeated order_ID and SKU combinations,
+retaining the most complete records based on amount availability.------------
+  
+  WITH duplicate AS 
+(SELECT
+	order_ID,
+	sku,
+	COUNT(*) AS count
+FROM
+	bronze.amazon_sales
+GROUP BY
+	order_ID,
+	sku
+	),
+duplicate_num AS
+(
+SELECT
+	a.*,
+	ROW_NUMBER() OVER (PARTITION BY a.order_id,a.sku ORDER BY a.amount DESC) AS rank
+FROM
+	bronze.amazon_sales a
+JOIN
+	duplicate d
+	ON
+	a.sku = d.sku
+	AND
+	a.order_ID = d.order_ID
+	)
+SELECT
+	 *
+FROM
+	duplicate_num
+WHERE
+	rank = 1
