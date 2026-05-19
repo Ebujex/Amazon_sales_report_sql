@@ -1,1 +1,15 @@
+/* quality check */
 
+-------checking for duplication  to identify repeated order_ID and SKU combinations--------
+
+SELECT
+	order_ID,
+	sku,
+	COUNT(*) AS count
+FROM
+	bronze.amazon_sales
+GROUP BY
+	order_ID,
+	sku
+HAVING 
+	COUNT(*) > 1;
