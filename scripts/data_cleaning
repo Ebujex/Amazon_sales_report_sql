@@ -4,6 +4,7 @@ data cleaning
 
 ---------- transactional Duplicate handling using ROW_NUMBER() window function to identify repeated order_ID and SKU combinations,
 retaining the most complete records based on amount availability.------------
+/* GOAL; Find duplicate transaction rows and keep only the best version of each duplicate.*/
   
   WITH duplicate AS 
 (SELECT
