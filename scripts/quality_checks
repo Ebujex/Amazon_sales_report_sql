@@ -14,7 +14,7 @@ GROUP BY
 HAVING 
 	COUNT(*) > 1;
 
-------Leading and trailing whitespace check----------
+------Leading and trailing whitespace check for order_ID colomn----------
 
 SELECT
 	order_ID
@@ -22,3 +22,66 @@ FROM
 	bronze.amazon_sales
 WHERE
 	order_ID <> TRIM(order_ID)
+
+------Leading and trailing whitespace check for fulfilment colomn----------
+
+SELECT
+	fulfilment
+FROM
+	bronze.amazon_sales
+WHERE
+	fulfilment <> TRIM(fulfilment)
+
+
+--------Distinct value check for fulfilment column--------
+SELECT DISTINCT
+	fulfilment
+FROM
+	bronze.amazon_sales
+
+--------Distinct value check for sales_channel column--------
+SELECT DISTINCT
+	sales_channel
+FROM
+	bronze.amazon_sales
+
+--------Distinct value check for ship_service_level column--------
+SELECT DISTINCT
+	ship_service_level
+FROM
+	bronze.amazon_sales
+
+----------SKU-style consistency check-------------
+WITH style_check AS (
+    SELECT
+        style,
+        CASE
+            WHEN CHARINDEX('-', sku) > 0
+            THEN LEFT(sku, CHARINDEX('-', sku) - 1)
+            ELSE sku
+        END AS extracted_text
+    FROM bronze.amazon_sales
+    )
+SELECT 
+	* 
+FROM 
+	style_check 
+WHERE 
+	style <> extracted_text;
+
+--------Distinct value check for category column--------
+SELECT DISTINCT
+    category
+FROM 
+	bronze.amazon_sales;
+
+--------------ASIN length validation to identify product identifiers exceeding the standard 10 character format.------------
+
+SELECT 
+    asin
+FROM 
+	bronze.amazon_sales
+WHERE 
+	LEN(asin) >10;
+
+
