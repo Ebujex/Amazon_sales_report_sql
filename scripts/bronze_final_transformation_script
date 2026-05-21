@@ -1,0 +1,41 @@
+WITH row_num AS (
+SELECT
+		[index],
+		order_ID AS order_id,
+		date,
+		CASE
+			WHEN status = 'Shipped - Delivered to Buyer' THEN 'Shipped'
+		ELSE
+			status
+		END AS status,
+		fulfilment,
+		sales_Channel,
+		ship_service_level,
+		style,
+		sku,
+		category,
+		size,
+		asin,
+		CASE 
+			WHEN courier_Status IS NULL THEN 'N/A'
+		ELSE	
+			courier_status
+		END AS courier_Status,
+		qty,
+		currency,
+		amount,
+		ship_city,
+		ship_state,
+		ship_postal_code,
+		ship_country,
+		b2b,
+		fulfilled_by,
+		ROW_NUMBER() OVER (PARTITION BY order_id,sku ORDER BY amount DESC) AS order_rank
+	FROM
+		bronze.amazon_sales)
+SELECT
+ *
+FROM
+	row_num
+WHERE
+	order_rank = 1
