@@ -19,3 +19,14 @@ FROM
 	row_num
 WHERE
 	order_rank = 1
+
+--------------status normalisation-----------------------
+SELECT
+	status,
+	CASE
+		WHEN status = 'Shipped - Delivered to Buyer' THEN 'Shipped'
+	ELSE
+		status
+	END AS status_clean
+FROM
+	bronze.amazon_sales
