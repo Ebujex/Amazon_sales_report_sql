@@ -1,0 +1,85 @@
+/* inserting transformed bronze data to silver table */
+
+
+  WITH row_num AS (
+SELECT
+		[index],
+		order_ID AS order_id,
+		date AS order_date,
+		CASE
+			WHEN status = 'Shipped - Delivered to Buyer' THEN 'Shipped'
+		ELSE
+			status
+		END AS status,
+		fulfilment,
+		sales_Channel,
+		ship_service_level,
+		style,
+		sku,
+		category,
+		size,
+		asin,
+		COALESCE(courier_Status,'N/A') AS courier_status,
+		qty,
+		COALESCE(currency,'INR') AS currency,
+		ROUND(COALESCE(amount, 0), 0) AS amount,
+		CASE
+			WHEN ship_city IS NULL THEN 'UNKNOWN'
+			WHEN UPPER(TRIM(ship_city)) LIKE '%MUMBAI%' THEN 'MUMBAI'
+			WHEN UPPER(TRIM(ship_city)) LIKE '%COCHIN%' THEN 'COCHIN'
+			WHEN UPPER(TRIM(ship_city)) LIKE '%HOWRAH%' THEN 'HOWRAH'
+			WHEN UPPER(TRIM(ship_city)) LIKE '%SURYAPET%' THEN 'SURYAPET'
+			WHEN UPPER(TRIM(ship_city)) LIKE '%DIST%' AND CHARINDEX(' ', UPPER(TRIM(ship_city))) > 0 THEN LEFT(UPPER(TRIM(ship_city)),CHARINDEX(' ',UPPER(TRIM(ship_city)))-1)
+			WHEN UPPER(TRIM(ship_city)) LIKE '%.%' THEN LEFT(UPPER(TRIM(ship_city)),CHARINDEX('.',UPPER(TRIM(ship_city)))-1)
+			WHEN UPPER(TRIM(ship_city)) LIKE '%-%' THEN LEFT(UPPER(TRIM(ship_city)),CHARINDEX('-',UPPER(TRIM(ship_city)))-1)
+			WHEN UPPER(TRIM(ship_city)) LIKE '%,%' THEN SUBSTRING(
+				UPPER(TRIM(ship_city)),
+				CHARINDEX(',',UPPER(TRIM(ship_city)))+1,
+				LEN(UPPER(TRIM(ship_city)))
+				)
+	    ELSE
+			UPPER(TRIM(ship_city))
+		END AS ship_city,
+		 CASE
+			WHEN ship_state IS NULL THEN 'UNKNOWN'
+			WHEN UPPER(TRIM(ship_state)) = 'RJ' OR UPPER(TRIM(ship_state)) = 'RAJ' THEN 'RAJASTHAN'
+			WHEN UPPER(TRIM(ship_state)) = 'AR' THEN 'ARUNACHAL PRADESH'
+			WHEN UPPER(TRIM(ship_state)) = 'NL' THEN 'NAGALAND'
+			WHEN UPPER(TRIM(ship_state)) = 'PB' THEN 'PUNJAB'
+		ELSE UPPER(TRIM(ship_state))
+		END AS ship_state,
+		ship_postal_code,
+		ship_country,
+		b2b,
+		COALESCE(fulfilled_by,'N/A') AS fulfilled_by,
+		ROW_NUMBER() OVER (PARTITION BY order_id,sku ORDER BY amount DESC) AS order_rank
+	FROM
+		bronze.amazon_sales)
+INSERT INTO silver.amazon_sales
+SELECT
+	[index],
+	order_id,
+	order_date,
+	status,
+	fulfilment,
+	sales_Channel,
+	ship_service_level,
+	style,
+	sku,
+	category,
+	size,
+	asin,
+	courier_status,
+	qty,
+	currency,
+	amount,
+	ship_city,
+	ship_state,
+	ship_postal_code,
+	ship_country,
+	b2b,
+	fulfilled_by
+FROM
+	row_num
+WHERE
+	order_rank = 1
