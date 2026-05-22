@@ -30,3 +30,49 @@ SELECT
 	END AS status_clean
 FROM
 	bronze.amazon_sales
+
+------NULL handing and amount rounding tranformation---------
+
+ROUND(COALESCE(amount, 0), -1)
+
+-------------- ship city normalization and categorical standardization transformations.-------------
+
+SELECT DISTINCT
+   CASE
+        WHEN UPPER(TRIM(ship_city)) LIKE '%MUMBAI%' THEN 'MUMBAI'
+        WHEN UPPER(TRIM(ship_city)) LIKE '%COCHIN%' THEN 'COCHIN'
+        WHEN UPPER(TRIM(ship_city)) LIKE '%HOWRAH%' THEN 'HOWRAH'
+        WHEN UPPER(TRIM(ship_city)) LIKE '%SURYAPET%' THEN 'SURYAPET'
+        WHEN UPPER(TRIM(ship_city)) LIKE '%DIST%' AND CHARINDEX(' ', UPPER(TRIM(ship_city))) > 0 THEN LEFT(UPPER(TRIM(ship_city)),CHARINDEX(' ',UPPER(TRIM(ship_city)))-1)
+        WHEN UPPER(TRIM(ship_city)) LIKE '%.%' THEN LEFT(UPPER(TRIM(ship_city)),CHARINDEX('.',UPPER(TRIM(ship_city)))-1)
+        WHEN UPPER(TRIM(ship_city)) LIKE '%-%' THEN LEFT(UPPER(TRIM(ship_city)),CHARINDEX('-',UPPER(TRIM(ship_city)))-1)
+        WHEN UPPER(TRIM(ship_city)) LIKE '%,%' THEN SUBSTRING(
+            UPPER(TRIM(ship_city)),
+            CHARINDEX(',',UPPER(TRIM(ship_city)))+1,
+            LEN(UPPER(TRIM(ship_city)))
+            )
+   ELSE
+        UPPER(TRIM(ship_city))
+    END AS ship_city
+FROM bronze.amazon_sales
+
+--------------------State abbrevation normalisation and null handling--------------------
+
+SELECT DISTINCT
+    CASE
+        WHEN UPPER(TRIM(ship_state)) = 'RJ' OR UPPER(TRIM(ship_state)) IN ('raj','Raj') THEN 'RAJASTHAN'
+        WHEN UPPER(TRIM(ship_state)) = 'AR' THEN 'Arunachal Pradesh'
+        WHEN UPPER(TRIM(ship_state)) = 'NL' THEN 'Nagaland'
+        WHEN UPPER(TRIM(ship_state)) = 'PB' THEN 'Punjab'
+        WHEN UPPER(TRIM(ship_state)) IS NULL THEN 'UNKNOWN'
+    ELSE UPPER(TRIM(ship_state))
+    END AS ship_state
+FROM
+    bronze.amazon_sales
+
+-------------handling null in 'fulfilled_by' column-------------------
+
+SELECT DISTINCT
+ COALESCE(fulfilled_by,'N/A')
+FROM
+    bronze.amazon_sales
