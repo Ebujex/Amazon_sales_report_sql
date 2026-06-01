@@ -1,0 +1,17 @@
+/* checks for some observations in the dataset */
+
+----if quantity is 0 and amount is greater than, does it mean the order was cancelled-----
+
+  SELECT
+	amount,
+	qty,
+	status
+FROM
+	silver.amazon_sales
+WHERE
+	qty =0
+	AND
+	amount > 0;
+/* During exploratory data analysis, records with quantity equal to zero and positive order amounts were investigated.
+  Analysis showed these records were associated with cancelled orders,
+indicating that quantity was reset while the original transaction value remained recorded in the system.*/
