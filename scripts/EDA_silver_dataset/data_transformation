@@ -1,0 +1,30 @@
+/* creating month colum */
+
+SELECT
+	order_date,
+	DATENAME(MONTH,order_date) AS order_month
+FROM
+	silver.amazon_sales
+ORDER BY
+	order_date
+
+-----Applied order status categorization and standardization for business reporting.-----
+SELECT
+	CASE
+		WHEN status IN ('Shipped - Lost in Transit',
+		'Shipped - Returning to Seller',
+		'Shipped - Returned to Seller',
+		'Shipped - Rejected by Buyer',
+		'Shipped - Damaged') THEN 'Returned/Failed'
+		WHEN status IN ('Pending',
+		'Pending - Waiting for Pick Up',
+		'Shipping') THEN 'Pending'
+		WHEN status IN ('Shipped - Picked Up',
+		'Shipped - Out for Delivery',
+		'Shipped') THEN 'Shipped'
+	ELSE
+		'Cancelled'
+	END AS status,
+	amount
+FROM
+	silver.amazon_sales

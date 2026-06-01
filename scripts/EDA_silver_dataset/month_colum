@@ -1,9 +1,0 @@
-/* creating month colum */
-
-SELECT
-	order_date,
-	DATENAME(MONTH,order_date) AS order_month
-FROM
-	silver.amazon_sales
-ORDER BY
-	order_date
