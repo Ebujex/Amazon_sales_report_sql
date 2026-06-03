@@ -5,6 +5,8 @@ SELECT
 	SUM(amount) AS total_revenue
 FROM
 	gold.amazon_sales
+WHERE
+ 	status <> 'Cancelled'
 GROUP BY
 	fulfilment
 ORDER BY 
