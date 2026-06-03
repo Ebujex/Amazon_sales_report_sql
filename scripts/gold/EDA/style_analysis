@@ -1,0 +1,25 @@
+------------analysing the top 10 styles that generated the most revenue----------
+SELECT TOP 10
+	style,
+	SUM(amount) AS total_revenue
+FROM
+	gold.amazon_sales
+WHERE
+ 	status <> 'Cancelled'
+GROUP BY
+	style
+ORDER BY 
+	total_revenue DESC
+/* JNE3797 is the style that generated most revenue with total of INR2,545,827, followed by J0230 with total of INR1,777,465*/
+
+--------analysing the bottom 10 styles that generated the lowest revenue--------
+SELECT TOP 10
+	style,
+	SUM(amount) AS total_revenue
+FROM
+	gold.amazon_sales
+GROUP BY
+	style
+ORDER BY 
+	total_revenue
+/* 5 styles was not sold, the least revenue excluding the unsold style is SAR060 */

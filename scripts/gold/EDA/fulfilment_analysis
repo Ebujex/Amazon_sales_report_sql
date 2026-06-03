@@ -1,0 +1,14 @@
+--------Analysing which fulfilment channel geneated more revenue --------
+
+SELECT
+	fulfilment,
+	SUM(amount) AS total_revenue
+FROM
+	gold.amazon_sales
+WHERE
+ 	status <> 'Cancelled'
+GROUP BY
+	fulfilment
+ORDER BY 
+	total_revenue DESC
+  /* Amazon is found to generate more revenue */
