@@ -1,0 +1,27 @@
+-----Analysing the city that drive highest sales-------
+SELECT TOP 10
+	ship_city,
+	SUM(amount) AS total_revenue
+FROM
+	gold.amazon_sales
+WHERE
+ 	status <> 'Cancelled'
+GROUP BY
+	ship_city
+ORDER BY 
+	total_revenue DESC
+/* BENGALURU is where highest sales was made, generating a total of INR6,652,514 */
+
+-----Analysing the city that drive lowest sales-------
+SELECT TOP 10
+	ship_city,
+	SUM(amount) AS total_revenue
+FROM
+	gold.amazon_sales
+WHERE
+ 	status <> 'Cancelled'
+GROUP BY
+	ship_city
+ORDER BY 
+	total_revenue 
+/* there was no sales in 4 cities, the least city where sales was made is KILAPAVOOR with total revenue of INR241 */
