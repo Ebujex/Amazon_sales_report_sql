@@ -1,0 +1,13 @@
+-------Analysing which category generated the highest revenue-----
+SELECT 
+	category,
+	SUM(amount) AS total_revenue
+FROM
+	gold.amazon_sales
+WHERE
+	status <> 'Cancelled'
+GROUP BY
+	category
+ORDER BY 
+	total_revenue  DESC
+/* Set generated the highest revenue with a total revenue of INR3,502,9420 */
