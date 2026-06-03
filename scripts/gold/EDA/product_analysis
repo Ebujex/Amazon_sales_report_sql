@@ -1,0 +1,25 @@
+------analysing top 10 products that generated most revenues------
+SELECT TOP 10
+	sku,
+	SUM(amount) AS total_revenue
+FROM
+	gold.amazon_sales
+GROUP BY
+	sku
+ORDER BY 
+	total_revenue DESC
+/* J0230-SKD-M is the product with the revenue with a total sale of INR526,535,
+followed by JNE3797-KR-L with total revenue of INR524,575 */
+
+------analysing underperforming products------
+SELECT TOP 100
+	sku,
+	SUM(amount) AS total_revenue
+FROM
+	gold.amazon_sales
+GROUP BY
+	sku
+ORDER BY 
+	total_revenue 
+/* from the analysis , 56 products was not sold.
+The least sold product was JNE3276-KR-XXXL generating only the total of INR199. */
