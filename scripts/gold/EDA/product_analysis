@@ -4,12 +4,14 @@ SELECT TOP 10
 	SUM(amount) AS total_revenue
 FROM
 	gold.amazon_sales
+WHERE
+ 	status <> 'Cancelled'
 GROUP BY
 	sku
 ORDER BY 
 	total_revenue DESC
-/* J0230-SKD-M is the product with the revenue with a total sale of INR526,535,
-followed by JNE3797-KR-L with total revenue of INR524,575 */
+/* J0230-SKD-M is the product with the revenue with a total sale of INR479,750,
+followed by JNE3797-KR-L with total revenue of INR452,185 */
 
 ------analysing underperforming products------
 SELECT TOP 100
@@ -17,6 +19,8 @@ SELECT TOP 100
 	SUM(amount) AS total_revenue
 FROM
 	gold.amazon_sales
+WHERE
+ 	status <> 'Cancelled'
 GROUP BY
 	sku
 ORDER BY 
