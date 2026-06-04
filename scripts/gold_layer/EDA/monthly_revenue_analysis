@@ -1,17 +1,28 @@
-------Monthly Revenue Analysis Excluding Cancelled Orders----
-SELECT 
-	order_month,
-	SUM(amount) AS revenue
+/*
+---------------------------------------------------------
+Monthly Revenue Analysis Excluding Cancelled Orders
+---------------------------------------------------------
+Purpose:
+Analyze monthly revenue performance after excluding
+cancelled orders.
+
+Insight:
+April recorded the highest revenue, while March
+generated the lowest revenue during the period
+analyzed.
+---------------------------------------------------------
+*/
+
+SELECT
+    order_month,
+    SUM(amount) AS revenue
 FROM
-	(SELECT
-		order_month,
-		amount
-	FROM 
-		gold.amazon_sales
-	WHERE
-		status <> 'Cancelled')t
-GROUP BY
-	order_month
-ORDER BY
-	SUM(amount) DESC
-/* Insight: the highest revenue was made in April, while the least was made in march */
+(
+    SELECT
+        order_month,
+        amount
+    FROM gold.amazon_sales
+    WHERE status <> 'Cancelled'
+) t
+GROUP BY order_month
+ORDER BY SUM(amount) DESC;

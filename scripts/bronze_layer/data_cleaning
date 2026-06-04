@@ -1,78 +1,97 @@
 /*
-data cleaning
+=========================================================
+Data Cleaning and Transformation
+=========================================================
+Purpose:
+This script documents the main cleaning and transformation
+steps applied to the raw Amazon sales dataset in the bronze
+layer before creating the cleaned silver layer.
+
+Transformations Included:
+- Duplicate handling using ROW_NUMBER()
+- Order status standardization
+- NULL handling
+- Amount rounding
+- Ship city normalization
+- Ship state standardization
+- Fulfilled_by missing value handling
+=========================================================
 */
 
----------- transactional Duplicate handling using ROW_NUMBER() window function to identify repeated order_ID and SKU combinations,
-retaining the most complete records based on amount availability.------------
-/* GOAL; Find duplicate transaction rows and keep only the best version of each duplicate.*/
-  
- 
+
+/* Deduplicate repeated order and SKU combinations, keeping the row with the highest amount */
 WITH row_num AS (
+    SELECT
+        *,
+        ROW_NUMBER() OVER (
+            PARTITION BY order_id, sku
+            ORDER BY amount DESC
+        ) AS order_rank
+    FROM bronze.amazon_sales
+)
 SELECT
-		*,
-		ROW_NUMBER() OVER (PARTITION BY order_id,sku ORDER BY amount DESC) AS order_rank
-	FROM
-		bronze.amazon_sales)
+    *
+FROM row_num
+WHERE order_rank = 1;
+
+
+/* Standardize detailed shipped status into a simplified shipped status */
 SELECT
- *
-FROM
-	row_num
-WHERE
-	order_rank = 1
+    status,
+    CASE
+        WHEN status = 'Shipped - Delivered to Buyer' THEN 'Shipped'
+        ELSE status
+    END AS status_clean
+FROM bronze.amazon_sales;
 
---------------status normalisation-----------------------
+
+/* Replace missing amount values with 0 and round amount to the nearest ten */
 SELECT
-	status,
-	CASE
-		WHEN status = 'Shipped - Delivered to Buyer' THEN 'Shipped'
-	ELSE
-		status
-	END AS status_clean
-FROM
-	bronze.amazon_sales
+    amount,
+    ROUND(COALESCE(amount, 0), -1) AS amount_clean
+FROM bronze.amazon_sales;
 
-------NULL handing and amount rounding tranformation---------
 
-ROUND(COALESCE(amount, 0), -1)
-
--------------- ship city normalization and categorical standardization transformations.-------------
-
+/* Normalize ship city values by standardizing casing, trimming spaces, and handling common city name variations */
 SELECT DISTINCT
-   CASE
+    CASE
+        WHEN ship_city IS NULL THEN 'UNKNOWN'
         WHEN UPPER(TRIM(ship_city)) LIKE '%MUMBAI%' THEN 'MUMBAI'
         WHEN UPPER(TRIM(ship_city)) LIKE '%COCHIN%' THEN 'COCHIN'
         WHEN UPPER(TRIM(ship_city)) LIKE '%HOWRAH%' THEN 'HOWRAH'
         WHEN UPPER(TRIM(ship_city)) LIKE '%SURYAPET%' THEN 'SURYAPET'
-        WHEN UPPER(TRIM(ship_city)) LIKE '%DIST%' AND CHARINDEX(' ', UPPER(TRIM(ship_city))) > 0 THEN LEFT(UPPER(TRIM(ship_city)),CHARINDEX(' ',UPPER(TRIM(ship_city)))-1)
-        WHEN UPPER(TRIM(ship_city)) LIKE '%.%' THEN LEFT(UPPER(TRIM(ship_city)),CHARINDEX('.',UPPER(TRIM(ship_city)))-1)
-        WHEN UPPER(TRIM(ship_city)) LIKE '%-%' THEN LEFT(UPPER(TRIM(ship_city)),CHARINDEX('-',UPPER(TRIM(ship_city)))-1)
-        WHEN UPPER(TRIM(ship_city)) LIKE '%,%' THEN SUBSTRING(
-            UPPER(TRIM(ship_city)),
-            CHARINDEX(',',UPPER(TRIM(ship_city)))+1,
-            LEN(UPPER(TRIM(ship_city)))
+        WHEN UPPER(TRIM(ship_city)) LIKE '%DIST%'
+             AND CHARINDEX(' ', UPPER(TRIM(ship_city))) > 0
+            THEN LEFT(UPPER(TRIM(ship_city)), CHARINDEX(' ', UPPER(TRIM(ship_city))) - 1)
+        WHEN UPPER(TRIM(ship_city)) LIKE '%.%'
+            THEN LEFT(UPPER(TRIM(ship_city)), CHARINDEX('.', UPPER(TRIM(ship_city))) - 1)
+        WHEN UPPER(TRIM(ship_city)) LIKE '%-%'
+            THEN LEFT(UPPER(TRIM(ship_city)), CHARINDEX('-', UPPER(TRIM(ship_city))) - 1)
+        WHEN UPPER(TRIM(ship_city)) LIKE '%,%'
+            THEN SUBSTRING(
+                UPPER(TRIM(ship_city)),
+                CHARINDEX(',', UPPER(TRIM(ship_city))) + 1,
+                LEN(UPPER(TRIM(ship_city)))
             )
-   ELSE
-        UPPER(TRIM(ship_city))
-    END AS ship_city
-FROM bronze.amazon_sales
+        ELSE UPPER(TRIM(ship_city))
+    END AS ship_city_clean
+FROM bronze.amazon_sales;
 
---------------------State abbrevation normalisation and null handling--------------------
 
+/* Standardize ship state values by expanding selected state abbreviations and handling missing values */
 SELECT DISTINCT
     CASE
-        WHEN UPPER(TRIM(ship_state)) = 'RJ' OR UPPER(TRIM(ship_state)) IN ('raj','Raj') THEN 'RAJASTHAN'
-        WHEN UPPER(TRIM(ship_state)) = 'AR' THEN 'Arunachal Pradesh'
-        WHEN UPPER(TRIM(ship_state)) = 'NL' THEN 'Nagaland'
-        WHEN UPPER(TRIM(ship_state)) = 'PB' THEN 'Punjab'
-        WHEN UPPER(TRIM(ship_state)) IS NULL THEN 'UNKNOWN'
-    ELSE UPPER(TRIM(ship_state))
-    END AS ship_state
-FROM
-    bronze.amazon_sales
+        WHEN ship_state IS NULL THEN 'UNKNOWN'
+        WHEN UPPER(TRIM(ship_state)) IN ('RJ', 'RAJ') THEN 'RAJASTHAN'
+        WHEN UPPER(TRIM(ship_state)) = 'AR' THEN 'ARUNACHAL PRADESH'
+        WHEN UPPER(TRIM(ship_state)) = 'NL' THEN 'NAGALAND'
+        WHEN UPPER(TRIM(ship_state)) = 'PB' THEN 'PUNJAB'
+        ELSE UPPER(TRIM(ship_state))
+    END AS ship_state_clean
+FROM bronze.amazon_sales;
 
--------------handling null in 'fulfilled_by' column-------------------
 
+/* Replace missing fulfilled_by values with N/A */
 SELECT DISTINCT
- COALESCE(fulfilled_by,'N/A')
-FROM
-    bronze.amazon_sales
+    COALESCE(fulfilled_by, 'N/A') AS fulfilled_by_clean
+FROM bronze.amazon_sales;

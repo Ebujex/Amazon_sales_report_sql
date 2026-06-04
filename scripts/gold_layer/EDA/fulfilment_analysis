@@ -1,14 +1,21 @@
---------Analysing which fulfilment channel geneated more revenue --------
+/*
+---------------------------------------------------------
+Revenue Analysis by Fulfillment Channel
+---------------------------------------------------------
+Purpose:
+Compare revenue generated across fulfillment channels.
+
+Insight:
+Amazon fulfillment generated more revenue than other
+fulfillment channels, making it the leading contributor
+to overall sales.
+---------------------------------------------------------
+*/
 
 SELECT
-	fulfilment,
-	SUM(amount) AS total_revenue
-FROM
-	gold.amazon_sales
-WHERE
- 	status <> 'Cancelled'
-GROUP BY
-	fulfilment
-ORDER BY 
-	total_revenue DESC
-  /* Amazon is found to generate more revenue */
+    fulfilment,
+    SUM(amount) AS total_revenue
+FROM gold.amazon_sales
+WHERE status <> 'Cancelled'
+GROUP BY fulfilment
+ORDER BY total_revenue DESC;
