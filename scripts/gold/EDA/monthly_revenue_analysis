@@ -6,9 +6,6 @@ Purpose:
 Analyze monthly revenue performance after excluding
 cancelled orders.
 
-Business Question:
-Which month generated the highest and lowest revenue?
-
 Insight:
 April recorded the highest revenue, while March
 generated the lowest revenue during the period
