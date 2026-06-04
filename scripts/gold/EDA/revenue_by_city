@@ -1,27 +1,50 @@
------Analysing the city that drive highest sales-------
-SELECT TOP 10
-	ship_city,
-	SUM(amount) AS total_revenue
-FROM
-	gold.amazon_sales
-WHERE
- 	status <> 'Cancelled'
-GROUP BY
-	ship_city
-ORDER BY 
-	total_revenue DESC
-/* BENGALURU is where highest sales was made, generating a total of INR6,652,514 */
+/*
+=========================================================
+Revenue Analysis by City
+=========================================================
+Purpose:
+Analyze city-level revenue performance to identify
+high-performing and low-performing sales locations.
+=========================================================
+*/
 
------Analysing the city that drive lowest sales-------
+
+/*
+---------------------------------------------------------
+Top Revenue-Generating Cities
+---------------------------------------------------------
+Insight:
+BENGALURU generated the highest revenue, making it
+the strongest-performing city and a key contributor
+to overall sales.
+---------------------------------------------------------
+*/
+
 SELECT TOP 10
-	ship_city,
-	SUM(amount) AS total_revenue
-FROM
-	gold.amazon_sales
-WHERE
- 	status <> 'Cancelled'
-GROUP BY
-	ship_city
-ORDER BY 
-	total_revenue 
-/* there was no sales in 4 cities, the least city where sales was made is KILAPAVOOR with total revenue of INR241 */
+    ship_city,
+    SUM(amount) AS total_revenue
+FROM gold.amazon_sales
+WHERE status <> 'Cancelled'
+GROUP BY ship_city
+ORDER BY total_revenue DESC;
+
+
+/*
+---------------------------------------------------------
+Lowest Revenue-Generating Cities
+---------------------------------------------------------
+Insight:
+Several cities recorded no sales during the analysis
+period. Among cities with sales activity, KILAPAVOOR
+generated the lowest revenue, indicating relatively
+low customer demand in that location.
+---------------------------------------------------------
+*/
+
+SELECT TOP 10
+    ship_city,
+    SUM(amount) AS total_revenue
+FROM gold.amazon_sales
+WHERE status <> 'Cancelled'
+GROUP BY ship_city
+ORDER BY total_revenue;
