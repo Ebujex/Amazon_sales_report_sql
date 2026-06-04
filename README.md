@@ -41,13 +41,11 @@ This project analyzes Amazon e-commerce sales data using SQL Server. The data wa
 ## Exploratory Data Analysis
 
 - Monthly Revenue Analysis
-- Revenue by Category
-- Revenue by City
-- Revenue by State
-- Fulfillment Analysis
-- Product Analysis
-- Style Analysis
-- Order Status Analysis
+- Revenue Analysis by Fulfillment Channel
+- Product Performance Analysis
+- Revenue Analysis by Product Category
+- Revenue Analysis by City
+- Revenue Analysis by Product Style
 
 ## Key Insights
 
