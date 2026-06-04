@@ -1,29 +1,49 @@
-------analysing top 10 products that generated most revenues------
-SELECT TOP 10
-	sku,
-	SUM(amount) AS total_revenue
-FROM
-	gold.amazon_sales
-WHERE
- 	status <> 'Cancelled'
-GROUP BY
-	sku
-ORDER BY 
-	total_revenue DESC
-/* J0230-SKD-M is the product with the revenue with a total sale of INR479,750,
-followed by JNE3797-KR-L with total revenue of INR452,185 */
+/*
+=========================================================
+Product Performance Analysis
+=========================================================
+Purpose:
+Analyze product-level revenue performance to identify
+top-performing and underperforming products.
+=========================================================
+*/
 
-------analysing underperforming products------
+
+/*
+---------------------------------------------------------
+Top 10 Revenue-Generating Products
+---------------------------------------------------------
+Insight:
+Revenue was concentrated among a small number of
+products, with J0230-SKD-M and JNE3797-KR-L emerging
+as the strongest revenue contributors.
+---------------------------------------------------------
+*/
+
+SELECT TOP 10
+    sku,
+    SUM(amount) AS total_revenue
+FROM gold.amazon_sales
+WHERE status <> 'Cancelled'
+GROUP BY sku
+ORDER BY total_revenue DESC;
+
+
+/*
+---------------------------------------------------------
+Underperforming Product Analysis
+---------------------------------------------------------
+Insight:
+Several products generated little or no revenue during
+the analysis period, suggesting potential opportunities
+for inventory review and product portfolio optimization.
+---------------------------------------------------------
+*/
+
 SELECT TOP 100
-	sku,
-	SUM(amount) AS total_revenue
-FROM
-	gold.amazon_sales
-WHERE
- 	status <> 'Cancelled'
-GROUP BY
-	sku
-ORDER BY 
-	total_revenue 
-/* from the analysis , 56 products was not sold.
-The least sold product was JNE3276-KR-XXXL generating only the total of INR199. */
+    sku,
+    SUM(amount) AS total_revenue
+FROM gold.amazon_sales
+WHERE status <> 'Cancelled'
+GROUP BY sku
+ORDER BY total_revenue;
