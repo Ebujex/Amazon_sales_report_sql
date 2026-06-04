@@ -1,87 +1,85 @@
-/* quality check */
+/*
+=========================================================
+Data Quality Checks
+=========================================================
+Purpose:
+This script performs initial data quality checks on the
+raw Amazon sales dataset in the bronze layer.
 
--------checking for duplication  to identify repeated order_ID and SKU combinations--------
+Checks Included:
+- Duplicate order and product checks
+- Leading and trailing whitespace checks
+- Distinct value checks for categorical fields
+- SKU and style consistency validation
+- ASIN length validation
+=========================================================
+*/
 
+
+/* Check for duplicate order and SKU combinations */
 SELECT
-	order_ID,
-	sku,
-	COUNT(*) AS count
-FROM
-	bronze.amazon_sales
+    order_ID,
+    sku,
+    COUNT(*) AS duplicate_count
+FROM bronze.amazon_sales
 GROUP BY
-	order_ID,
-	sku
-HAVING 
-	COUNT(*) > 1;
+    order_ID,
+    sku
+HAVING COUNT(*) > 1;
 
-------Leading and trailing whitespace check for order_ID colomn----------
 
+/* Check for leading and trailing spaces in order_ID */
 SELECT
-	order_ID
-FROM
-	bronze.amazon_sales
-WHERE
-	order_ID <> TRIM(order_ID)
+    order_ID
+FROM bronze.amazon_sales
+WHERE order_ID <> TRIM(order_ID);
 
-------Leading and trailing whitespace check for fulfilment colomn----------
 
+/* Check for leading and trailing spaces in fulfilment */
 SELECT
-	fulfilment
-FROM
-	bronze.amazon_sales
-WHERE
-	fulfilment <> TRIM(fulfilment)
+    fulfilment
+FROM bronze.amazon_sales
+WHERE fulfilment <> TRIM(fulfilment);
 
 
---------Distinct value check for fulfilment column--------
+/* Review unique values in fulfilment */
 SELECT DISTINCT
-	fulfilment
-FROM
-	bronze.amazon_sales
+    fulfilment
+FROM bronze.amazon_sales;
 
---------Distinct value check for sales_channel column--------
+
+/* Review unique values in sales_channel */
 SELECT DISTINCT
-	sales_channel
-FROM
-	bronze.amazon_sales
+    sales_channel
+FROM bronze.amazon_sales;
 
---------Distinct value check for ship_service_level column--------
+
+/* Review unique values in ship_service_level */
 SELECT DISTINCT
-	ship_service_level
-FROM
-	bronze.amazon_sales
+    ship_service_level
+FROM bronze.amazon_sales;
 
-----------SKU-style consistency check-------------
+
+/* Validate consistency between SKU prefix and style */
 WITH style_check AS (
     SELECT
         style,
+        sku,
         CASE
             WHEN CHARINDEX('-', sku) > 0
-            THEN LEFT(sku, CHARINDEX('-', sku) - 1)
+                THEN LEFT(sku, CHARINDEX('-', sku) - 1)
             ELSE sku
-        END AS extracted_text
+        END AS extracted_style
     FROM bronze.amazon_sales
-    )
-SELECT 
-	* 
-FROM 
-	style_check 
-WHERE 
-	style <> extracted_text;
+)
+SELECT
+    *
+FROM style_check
+WHERE style <> extracted_style;
 
---------Distinct value check for category column--------
-SELECT DISTINCT
-    category
-FROM 
-	bronze.amazon_sales;
 
---------------ASIN length validation to identify product identifiers exceeding the standard 10 character format.------------
-
-SELECT 
+/* Check for ASIN values longer than the expected 10-character format */
+SELECT
     asin
-FROM 
-	bronze.amazon_sales
-WHERE 
-	LEN(asin) >10;
-
-
+FROM bronze.amazon_sales
+WHERE LEN(asin) > 10;
