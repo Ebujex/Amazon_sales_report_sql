@@ -38,6 +38,8 @@ This project analyzes Amazon e-commerce sales data using SQL Server. The data wa
 - Handled missing values
 - Normalized currency and revenue fields
 
+**Note:** Data quality checks are documented alongside the relevant SQL scripts.
+
 ## Exploratory Data Analysis
 
 - Monthly Revenue Analysis
