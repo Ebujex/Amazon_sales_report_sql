@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This project analyzes Amazon e-commerce sales data using SQL Server. The dataset was cleaned, transformed, and analyzed to uncover sales trends, product performance, customer locations, and fulfillment patterns.
+This project analyzes Amazon e-commerce sales data using SQL Server. The data was cleaned and transformed to better understand sales performance, product demand, customer purchasing locations, and fulfillment operations.
 
 ## Project Objectives
 
@@ -23,10 +23,10 @@ This project analyzes Amazon e-commerce sales data using SQL Server. The dataset
 - SQL Server
 - Data Cleaning
 - Data Transformation
-- CTEs
+- Common Table Expressions (CTEs)
 - Window Functions
 - String Functions
-- Aggregations
+- Aggregate Functions
 - Exploratory Data Analysis
 
 ## Data Cleaning Highlights
@@ -35,7 +35,7 @@ This project analyzes Amazon e-commerce sales data using SQL Server. The dataset
 - Standardized order statuses
 - Cleaned ship city and state values
 - Standardized state abbreviations
-- Handled missing values using COALESCE()
+- Handled missing values
 - Normalized currency and revenue fields
 
 ## Exploratory Data Analysis
@@ -51,12 +51,13 @@ This project analyzes Amazon e-commerce sales data using SQL Server. The dataset
 
 ## Key Insights
 
-- April generated the highest revenue, while March recorded the lowest.
-- Shipped orders accounted for most sales revenue.
-- Top products contributed a significant share of total revenue.
-- Revenue was concentrated in a few major cities and states.
-- Fulfillment methods influenced order outcomes and sales performance.
+- April recorded the highest revenue, while March generated the lowest sales revenue.
+- The Set category was the top revenue-generating product category.
+- Bengaluru was the highest-performing city by revenue.
+- Amazon fulfillment generated more revenue than other fulfillment methods.
+- Revenue was concentrated among a small number of top-performing products.
+- Several products and styles recorded no sales, indicating potential opportunities for inventory and product portfolio optimization.
 
 ## Conclusion
 
-This project demonstrates the end-to-end data analysis process using SQL Server, from data cleaning and transformation to exploratory analysis and business insight generation.
+This project involved cleaning, transforming, and analyzing Amazon sales data using SQL Server. The analysis helped uncover patterns in sales performance, product demand, customer locations, and fulfillment operations. It also provided hands-on experience with real-world data cleaning, exploratory analysis, and turning raw data into useful business insights.
